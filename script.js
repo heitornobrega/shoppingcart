@@ -1,11 +1,11 @@
-function createProductImageElement(imageSource) { //
+function createProductImageElement(imageSource) { // cria elemento imagem
   const img = document.createElement('img');
   img.className = 'item__image';
   img.src = imageSource;
   return img;
 }
 
-function createCustomElement(element, className, innerText) { //
+function createCustomElement(element, className, innerText) { // cria elemento
   const e = document.createElement(element);
   e.className = className;
   e.innerText = innerText;
