@@ -1,3 +1,4 @@
+const btnClean = document.querySelector('.empty-cart');
 const carrinho = document.querySelector('.cart__items');
 function createProductImageElement(imageSource) { // recebe endereço da imagem
   const img = document.createElement('img'); // cria tag img
@@ -27,6 +28,10 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText; // retorna o innertxt de uma tag span que tenha a classe item_sku
 }
 
+// function getPriceFromProductItem(item) {
+//   return item.querySelector('span.item__price').innerText; // retorna o innertxt de uma tag span que tenha a classe item_price
+// }
+
 function salvaNoLocalStorage() {
   saveCartItems(carrinho.innerHTML);
 }
@@ -38,12 +43,18 @@ async function addProductToCart(event) {
   salvaNoLocalStorage();
 }
 
+function addPrices() {
+  return carrinho.innerHTML;
+}
+console.log(addPrices());
+
 function createProductItemElement({ id: sku, title: name, thumbnail: image }) { // recebe três keys de um obj
   const section = document.createElement('section'); // cria uma tag section
   section.className = 'item'; // add a section criada uma classe chamada 'item';
 
   section.appendChild(createCustomElement('span', 'item__sku', sku)); // apenda na section uma tag span com a classe 'item_sku' e o innertxt sendo o valor correspondente a key sku do obj passado;
   section.appendChild(createCustomElement('span', 'item__title', name)); // apenda na section uma tag span com a classe 'item_title', e o innertxt sendo o valor corresponde a chavve name do obj passado;
+  // section.appendChild(createCustomElement('span', 'item_price', price));
   section.appendChild(createProductImageElement(image)); // apenda na section uma tag img
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'))
     .addEventListener('click', addProductToCart); // apenda na section um btn contendo a classe 'item_add, e o inner txt 'Adicionar ao carrinho!' 
@@ -64,11 +75,18 @@ function carregaCarrinho() {
   carrinho.addEventListener('click', cartItemClickListener);
 }
 
+function limpaCarrinho() {
+  carrinho.innerHTML = '';
+  localStorage.clear();
+}
+
+btnClean.addEventListener('click', limpaCarrinho);
 // function removeDoLocalStorage() {
 //   carrinho.addEventListener('click', () => {
 //     carrinho.innerHTML = 
 //   });
 // }
+
 window.onload = () => {
   addProducts('computador');
   carregaCarrinho();
