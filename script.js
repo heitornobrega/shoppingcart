@@ -1,3 +1,4 @@
+const carrinho = document.querySelector('.cart__items');
 function createProductImageElement(imageSource) { // recebe endereço da imagem
   const img = document.createElement('img'); // cria tag img
   img.className = 'item__image';// insere a classe 'item_image' na tag img criada 
@@ -26,11 +27,15 @@ function getSkuFromProductItem(item) {
   return item.querySelector('span.item__sku').innerText; // retorna o innertxt de uma tag span que tenha a classe item_sku
 }
 
+function salvaNoLocalStorage() {
+  saveCartItems(carrinho.innerHTML);
+}
+
 async function addProductToCart(event) {
-  const carrinho = document.querySelector('.cart__items');
   const idProduto = getSkuFromProductItem(event.path[1]);
   const objItem = await fetchItem(idProduto);
   carrinho.appendChild(createCartItemElement(objItem));
+  salvaNoLocalStorage();
 }
 
 function createProductItemElement({ id: sku, title: name, thumbnail: image }) { // recebe três keys de um obj
@@ -54,7 +59,18 @@ async function addProducts(produto) {
   });
 }
 
+function carregaCarrinho() {
+  carrinho.innerHTML = JSON.parse(getSavedCartItems('cartItems'));
+  carrinho.addEventListener('click', cartItemClickListener);
+}
+
+// function removeDoLocalStorage() {
+//   carrinho.addEventListener('click', () => {
+//     carrinho.innerHTML = 
+//   });
+// }
 window.onload = () => {
   addProducts('computador');
-  // addProductToCart();
+  carregaCarrinho();
+  // removeDoLocalStorage();
  };
