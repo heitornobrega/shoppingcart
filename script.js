@@ -12,9 +12,7 @@ function createCustomElement(element, className, innerText) { // recebe o nome d
   return e; // retorna o elemento
 }
 
-function cartItemClickListener(event) { // Função chamada quando um item da lista do carrinho é clicado
-  // coloque seu código aqui
-}
+const cartItemClickListener = (event) => event.target.remove();
 
 function createCartItemElement({ id: sku, title: name, price: salePrice }) { // recebe três keys de um obj
   const li = document.createElement('li'); // cria um elemento li
