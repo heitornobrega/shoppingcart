@@ -1,68 +1,70 @@
 const btnClean = document.querySelector('.empty-cart');
 const carrinho = document.querySelector('.cart__items');
 const loadDiv = document.querySelector('.loading');
-// const saidaLista = [];
-// const idsCarrinho = [];
-function createProductImageElement(imageSource) { // recebe endereço da imagem
-  const img = document.createElement('img'); // cria tag img
-  img.className = 'item__image';// insere a classe 'item_image' na tag img criada 
-  img.src = imageSource; // insere a fonte da imagem para a tag img
-  return img; // retorna a img
+const totalOutput = document.querySelector('.total-price');
+
+let total = 0;
+
+function createProductImageElement(imageSource) { 
+  const img = document.createElement('img'); 
+  img.src = imageSource;
+  return img; 
 }
 
-function createCustomElement(element, className, innerText) { // recebe o nome da tag qualquer, uma classe e um inertxt
-  const e = document.createElement(element); // cria o elemento personalizado
-  e.className = className; // add uma classe a essse elemento
-  e.innerText = innerText; // add um innertxt a esse elemento
-  return e; // retorna o elemento
-}
-
-const cartItemClickListener = (event) => event.target.remove();
-
-function createCartItemElement({ id: sku, title: name, price: salePrice }) { // recebe três keys de um obj
-  const li = document.createElement('li'); // cria um elemento li
-  li.className = 'cart__item'; // add a classe 'cart_item' na li
-  li.innerText = `SKU: ${sku} | NAME: ${name} | PRICE: $${salePrice}`; // add um innertxt ao li contendo os valores das keys passadas
-  li.addEventListener('click', cartItemClickListener); // add um eventListener na li, que dispara afunção cartItemClickListner 
-  return li; // retorna o li
+function createCustomElement(element, className, innerText) { 
+  const e = document.createElement(element); 
+  e.className = className; 
+  e.innerText = innerText; 
+  return e; 
 }
 
 function getSkuFromProductItem(item) {
-  return item.querySelector('span.item__sku').innerText; // retorna o innertxt de uma tag span que tenha a classe item_sku
+  return item.querySelector('span.item__sku').innerText;
 }
 
-// function getPriceFromProductItem(item) {
-//   return item.querySelector('span.item__price').innerText; // retorna o innertxt de uma tag span que tenha a classe item_price
-// }
-
-function salvaNoLocalStorage() {
+function updateLocalStorage() {
   saveCartItems(carrinho.innerHTML);
+}
+
+function precosSaida(event) {
+  const precoItemRemovido = parseFloat(event.target.children[0].innerText) * -1;
+  total += precoItemRemovido;
+  totalOutput.innerText = total;
+  // return total;
+}
+
+const cartItemClickListener = (event) => {
+  // precosSaida(event);
+  event.target.remove();
+  updateLocalStorage();
+};
+
+function createCartItemElement({ id: sku, title: name, price: salePrice }) { // Cria elementos que serão adicionados ao carrinho 
+  const li = document.createElement('li');
+  li.className = 'cart__item'; 
+  li.innerHTML = `SKU: ${sku} | NAME: ${name} | PRICE: $<span>${salePrice}</span>`;
+  li.addEventListener('click', cartItemClickListener);
+  li.addEventListener('click', precosSaida);
+  return li;
 }
 
 async function addProductToCart(event) {
   const idProduto = getSkuFromProductItem(event.path[1]);
   const objItem = await fetchItem(idProduto);
   carrinho.appendChild(createCartItemElement(objItem));
-  salvaNoLocalStorage();
-  pegaPreco();
+  updateLocalStorage();
 }
 
-function createProductItemElement({ id: sku, title: name, thumbnail: image, price }) { // recebe três keys de um obj
-  const section = document.createElement('section'); // cria uma tag section
-  section.className = 'item'; // add a section criada uma classe chamada 'item';
-  // saidaLista.push({
-  //   id: [sku],
-  //   price: [price],
-  // });
-  // loadSpan.classList.add('loading');
-  // loadSpan.innerText = 'Carregando...';
-  section.appendChild(createCustomElement('span', 'item__sku', sku)); // apenda na section uma tag span com a classe 'item_sku' e o innertxt sendo o valor correspondente a key sku do obj passado;
-  section.appendChild(createCustomElement('span', 'item__title', name)); // apenda na section uma tag span com a classe 'item_title', e o innertxt sendo o valor corresponde a chavve name do obj passado;
-  // section.appendChild(createCustomElement('span', 'item_price', price));
-  section.appendChild(createProductImageElement(image)); // apenda na section uma tag img
+function createProductItemElement({ id: sku, title: name, thumbnail: image, price }) { 
+  const section = document.createElement('section');
+  section.className = 'item'; 
+  section.appendChild(createCustomElement('span', 'item__sku', sku)); 
+  section.appendChild(createCustomElement('span', 'item__title', name));
+  section.appendChild(createProductImageElement(image));
+  section.appendChild(createCustomElement('span', 'item__price', price));
   section.appendChild(createCustomElement('button', 'item__add', 'Adicionar ao carrinho!'))
-    .addEventListener('click', addProductToCart); // apenda na section um btn contendo a classe 'item_add, e o inner txt 'Adicionar ao carrinho!'
-  return section; // retorna a section
+    .addEventListener('click', addProductToCart);
+  return section; 
 }
 
 async function addProducts(produto) {
@@ -87,11 +89,26 @@ function limpaCarrinho() {
 
 btnClean.addEventListener('click', limpaCarrinho);
 
-window.onload = () => {
-  addProducts('computador');
-  carregaCarrinho();
+// function updateTotalValue(entrada, saida) {
+//   const itemAdicionado = entrada.reduce((acc, curr) => acc + curr, 0); 
+//   const itemRemovido = saida.reduce((acc, curr) => acc + curr, 0);
+//   const total = itemAdicionado + itemRemovido;
+//   console.log(total);
+// }
 
-  // carrinho.childNodes.forEach((element, idx) => {
-  //   idsCarrinho.push(carrinho.children[idx].innerText.slice(4, 18).trim());
-  // });
- };
+function precosEntrada(event) {
+  const precoItemAdicionado = parseFloat(event.path[0].parentElement.childNodes[3].outerText);
+  total += precoItemAdicionado;
+  totalOutput.innerText = total;
+}
+
+function addEventNoAddCart() {
+  const btn = document.querySelectorAll('.item__add');
+  btn.forEach((element) => element.addEventListener('click', precosEntrada));
+}
+
+window.onload = async () => {
+  await addProducts('computador');
+  carregaCarrinho();
+  addEventNoAddCart();
+};
