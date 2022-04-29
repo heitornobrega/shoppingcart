@@ -30,11 +30,9 @@ function precosSaida(event) {
   const precoItemRemovido = parseFloat(event.target.children[0].innerText) * -1;
   total += precoItemRemovido;
   totalOutput.innerText = total;
-  // return total;
 }
 
 const cartItemClickListener = (event) => {
-  // precosSaida(event);
   event.target.remove();
   updateLocalStorage();
 };
@@ -88,13 +86,6 @@ function limpaCarrinho() {
 }
 
 btnClean.addEventListener('click', limpaCarrinho);
-
-// function updateTotalValue(entrada, saida) {
-//   const itemAdicionado = entrada.reduce((acc, curr) => acc + curr, 0); 
-//   const itemRemovido = saida.reduce((acc, curr) => acc + curr, 0);
-//   const total = itemAdicionado + itemRemovido;
-//   console.log(total);
-// }
 
 function precosEntrada(event) {
   const precoItemAdicionado = parseFloat(event.path[0].parentElement.childNodes[3].outerText);
